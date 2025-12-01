@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Financeira</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+            padding: 40px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .calc-button {
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .calc-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .calc-button:active {
+            transform: translateY(0);
+        }
+
+        .btn-equilibrio {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .btn-rentabilidade {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-lucratividade {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .btn-markup {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .calculator-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .calculator-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .result h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .result-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .back-btn {
+            width: 100%;
+            padding: 12px;
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #d0d0d0;
+        }
+
+        .clear-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .button-group button {
+            flex: 1;
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Estilos específicos para Markup */
+        .produto-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .produto-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .produto-title {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #ee5a6f;
+        }
+
+        .add-produto-btn {
+            width: 100%;
+            padding: 12px;
+            background: #43e97b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .add-produto-btn:hover {
+            background: #38f9d7;
+        }
+
+        .percentuais-section {
+            background: #fff8e1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #ffd54f;
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: #f57f17;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .formula-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .formula-title {
+            font-weight: 700;
+            color: #1976d2;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .formula-text {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #333;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Calculadora Financeira</h1>
+        
+        <div id="menu" class="menu-section">
+            <div class="button-grid">
+                <button class="calc-button btn-equilibrio" onclick="showCalculator('equilibrio')">
+                    Ponto de Equilíbrio
+                </button>
+                <button class="calc-button btn-lucratividade" onclick="showCalculator('lucratividade')">
+                    Lucratividade
+                </button>
+                <button class="calc-button btn-rentabilidade" onclick="showCalculator('rentabilidade')">
+                    Rentabilidade (ROI)
+                </button>
+                <button class="calc-button btn-markup" onclick="showCalculator('markup')">
+                    Markup
+                </button>
+            </div>
+        </div>
+
+        <!-- Ponto de Equilíbrio -->
+        <div id="equilibrio" class="calculator-section">
+            <h2 style="color: #667eea; margin-bottom: 20px;">Ponto de Equilíbrio</h2>
+            
+            <div class="formula-box">
+                <div class="formula-title">Fórmulas:</div>
+                <div class="formula-text">
+                    • Margem de Contribuição = Preço de Venda - Custo Variável<br>
+                    • Ponto de Equilíbrio (unidades) = Custo Fixo / Margem de Contribuição<br>
+                    • Receita no Ponto de Equilíbrio = Ponto de Equilíbrio × Preço de Venda
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Custo Fixo (R$):</label>
+                <input type="number" id="custo-fixo" placeholder="Ex: 10000" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>Preço de Venda (R$):</label>
+                <input type="number" id="preco-venda-eq" placeholder="Ex: 100" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>Custo Variável (R$):</label>
+                <input type="number" id="custo-variavel-eq" placeholder="Ex: 40" step="0.01">
+            </div>
+            <button class="calculate-btn" onclick="calcularEquilibrio()">Calcular</button>
+            <div id="result-equilibrio" class="result"></div>
+            <div class="button-group">
+                <button class="clear-btn" onclick="limparEquilibrio()">🗑️ Limpar Dados</button>
+                <button class="back-btn" onclick="showMenu()">← Voltar ao Menu</button>
+            </div>
+        </div>
+
+        <!-- Lucratividade -->
+        <div id="lucratividade" class="calculator-section">
+            <h2 style="color: #00f2fe; margin-bottom: 20px;">Lucratividade</h2>
+            
+            <div class="formula-box">
+                <div class="formula-title">Fórmula:</div>
+                <div class="formula-text">
+                    Lucratividade (%) = (Lucro Líquido / Receita Total) × 100
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Lucro Líquido (R$):</label>
+                <input type="number" id="lucro-liquido-lucr" placeholder="Ex: 30000" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>Receita Total (R$):</label>
+                <input type="number" id="receita-total" placeholder="Ex: 150000" step="0.01">
+            </div>
+            <button class="calculate-btn" onclick="calcularLucratividade()">Calcular</button>
+            <div id="result-lucratividade" class="result"></div>
+            <div class="button-group">
+                <button class="clear-btn" onclick="limparLucratividade()">🗑️ Limpar Dados</button>
+                <button class="back-btn" onclick="showMenu()">← Voltar ao Menu</button>
+            </div>
+        </div>
+
+        <!-- Rentabilidade -->
+        <div id="rentabilidade" class="calculator-section">
+            <h2 style="color: #f5576c; margin-bottom: 20px;">Rentabilidade (ROI)</h2>
+            
+            <div class="formula-box">
+                <div class="formula-title">Fórmula:</div>
+                <div class="formula-text">
+                    Rentabilidade (%) = (Lucro Líquido / Investimento) × 100
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Lucro Líquido (R$):</label>
+                <input type="number" id="lucro-liquido-rent" placeholder="Ex: 50000" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>Investimento (R$):</label>
+                <input type="number" id="investimento" placeholder="Ex: 200000" step="0.01">
+            </div>
+            <button class="calculate-btn" onclick="calcularRentabilidade()">Calcular</button>
+            <div id="result-rentabilidade" class="result"></div>
+            <div class="button-group">
+                <button class="clear-btn" onclick="limparRentabilidade()">🗑️ Limpar Dados</button>
+                <button class="back-btn" onclick="showMenu()">← Voltar ao Menu</button>
+            </div>
+        </div>
+
+        <!-- Markup -->
+        <div id="markup" class="calculator-section">
+            <h2 style="color: #38f9d7; margin-bottom: 20px;">Markup</h2>
+            
+            <div class="formula-box">
+                <div class="formula-title">Fórmulas:</div>
+                <div class="formula-text">
+                    • Markup Multiplicador = 100% / (100% - (%DV + %CF + %DF + %ML))<br>
+                    • PV = Somatório[CDVU] × Markup Multiplicador<br><br>
+                    • Markup Divisor = 1 - ((%DV + %CF + %DF + %ML) / 100%)<br>
+                    • PV = Somatório[CDVU] / Markup Divisor<br><br>
+                    <small>DV = Despesas Variáveis | CF = Custos Fixos | DF = Despesas Fixas | ML = Margem de Lucro | CDVU = Custo Direto Variável Unitário</small>
+                </div>
+            </div>
+
+            <div class="percentuais-section">
+                <div class="section-title">📊 Percentuais</div>
+                <button class="add-produto-btn" onclick="adicionarPercentual()">+ Adicionar Percentual</button>
+                <div id="percentuais-container"></div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <div class="section-title">🛍️ Produtos/Custos (CDVU)</div>
+                <button class="add-produto-btn" onclick="adicionarProduto()">+ Adicionar Produto/Custo</button>
+                <div id="produtos-container"></div>
+            </div>
+
+            <button class="calculate-btn" onclick="calcularMarkup()">Calcular Markup</button>
+            <div id="result-markup" class="result"></div>
+            <div class="button-group">
+                <button class="clear-btn" onclick="limparMarkup()">🗑️ Limpar Dados</button>
+                <button class="back-btn" onclick="showMenu()">← Voltar ao Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let produtoCounter = 0;
+        let produtos = {};
+        let percentualCounter = 0;
+        let percentuais = {};
+
+        // Função para formatar valores em Real Brasileiro
+        function formatarMoeda(valor) {
+            return valor.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Função para formatar números (unidades, quantidades)
+        function formatarNumero(valor, casasDecimais = 2) {
+            return valor.toLocaleString('pt-BR', {
+                minimumFractionDigits: casasDecimais,
+                maximumFractionDigits: casasDecimais
+            });
+        }
+
+        // Função para formatar percentuais
+        function formatarPercentual(valor) {
+            return valor.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }) + '%';
+        }
+
+        // Função para converter input brasileiro para número
+        function converterParaNumero(valor) {
+            if (typeof valor === 'number') return valor;
+            // Remove pontos de milhar e substitui vírgula por ponto
+            return parseFloat(valor.replace(/\./g, '').replace(',', '.'));
+        }
+
+        // Adiciona máscara de moeda brasileira aos inputs
+        function aplicarMascaraMoeda(input) {
+            input.addEventListener('input', function(e) {
+                let valor = e.target.value;
+                valor = valor.replace(/\D/g, '');
+                valor = (parseFloat(valor) / 100).toFixed(2);
+                valor = valor.replace('.', ',');
+                valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+                e.target.value = valor;
+            });
+        }
+
+        // Adiciona máscara de número aos inputs de percentual
+        function aplicarMascaraNumero(input) {
+            input.addEventListener('input', function(e) {
+                let valor = e.target.value;
+                // Permite números, vírgula e ponto
+                valor = valor.replace(/[^\d,.-]/g, '');
+                // Substitui vírgula por ponto para cálculo
+                e.target.value = valor;
+            });
+        }
+
+        // Função para obter valor numérico do input
+        function obterValor(inputId) {
+            const valor = document.getElementById(inputId).value;
+            if (!valor) return NaN;
+            // Remove pontos de milhar e substitui vírgula por ponto
+            return parseFloat(valor.replace(/\./g, '').replace(',', '.'));
+        }
+
+        function showCalculator(type) {
+            document.getElementById('menu').style.display = 'none';
+            document.querySelectorAll('.calculator-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(type).classList.add('active');
+            
+            // Adiciona um produto inicial se for Markup
+            if (type === 'markup' && Object.keys(produtos).length === 0) {
+                adicionarPercentual();
+                adicionarProduto();
+            }
+        }
+
+        function showMenu() {
+            document.getElementById('menu').style.display = 'block';
+            document.querySelectorAll('.calculator-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.result').forEach(result => {
+                result.classList.remove('show');
+            });
+            
+            // Limpa produtos ao voltar ao menu
+            produtos = {};
+            produtoCounter = 0;
+            percentuais = {};
+            percentualCounter = 0;
+            document.getElementById('produtos-container').innerHTML = '';
+            document.getElementById('percentuais-container').innerHTML = '';
+        }
+
+        function adicionarPercentual() {
+            percentualCounter++;
+            const id = `percentual-${percentualCounter}`;
+            percentuais[id] = { id: percentualCounter };
+
+            const container = document.getElementById('percentuais-container');
+            const percentualDiv = document.createElement('div');
+            percentualDiv.className = 'produto-item';
+            percentualDiv.id = id;
+            percentualDiv.innerHTML = `
+                <div class="produto-header">
+                    <span class="produto-title">Percentual ${percentualCounter}</span>
+                    <button class="remove-btn" onclick="removerPercentual('${id}')">Remover</button>
+                </div>
+                <div class="input-group">
+                    <label>Nome/Descrição:</label>
+                    <input type="text" id="${id}-nome" placeholder="Ex: Despesas Variáveis, Margem de Lucro">
+                </div>
+                <div class="input-group">
+                    <label>Percentual (%):</label>
+                    <input type="number" id="${id}-valor" placeholder="Ex: 15.50" step="0.01">
+                </div>
+            `;
+            container.appendChild(percentualDiv);
+        }
+
+        function removerPercentual(id) {
+            delete percentuais[id];
+            document.getElementById(id).remove();
+        }
+
+        function adicionarProduto() {
+            produtoCounter++;
+            const id = `produto-${produtoCounter}`;
+            produtos[id] = { id: produtoCounter };
+
+            const container = document.getElementById('produtos-container');
+            const produtoDiv = document.createElement('div');
+            produtoDiv.className = 'produto-item';
+            produtoDiv.id = id;
+            produtoDiv.innerHTML = `
+                <div class="produto-header">
+                    <span class="produto-title">Produto/Custo ${produtoCounter}</span>
+                    <button class="remove-btn" onclick="removerProduto('${id}')">Remover</button>
+                </div>
+                <div class="input-group">
+                    <label>Nome/Descrição:</label>
+                    <input type="text" id="${id}-nome" placeholder="Ex: Matéria-prima A">
+                </div>
+                <div class="input-group">
+                    <label>Custo Direto Variável Unitário - CDVU (R$):</label>
+                    <input type="number" id="${id}-custo" placeholder="Ex: 50.00" step="0.01">
+                </div>
+            `;
+            container.appendChild(produtoDiv);
+        }
+
+        function removerProduto(id) {
+            delete produtos[id];
+            document.getElementById(id).remove();
+        }
+
+        function calcularEquilibrio() {
+            const custoFixo = obterValor('custo-fixo');
+            const precoVenda = obterValor('preco-venda-eq');
+            const custoVariavel = obterValor('custo-variavel-eq');
+
+            if (isNaN(custoFixo) || isNaN(precoVenda) || isNaN(custoVariavel)) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            const margemContribuicao = precoVenda - custoVariavel;
+            
+            if (margemContribuicao <= 0) {
+                alert('A Margem de Contribuição deve ser positiva! Verifique se o Preço de Venda é maior que o Custo Variável.');
+                return;
+            }
+
+            const pontoEquilibrio = custoFixo / margemContribuicao;
+            const receitaEquilibrio = pontoEquilibrio * precoVenda;
+
+            const resultDiv = document.getElementById('result-equilibrio');
+            resultDiv.innerHTML = `
+                <h3>Resultado:</h3>
+                <div class="result-item">
+                    <span class="result-label">Margem de Contribuição:</span>
+                    <span class="result-value">${formatarMoeda(margemContribuicao)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Ponto de Equilíbrio:</span>
+                    <span class="result-value">${formatarNumero(pontoEquilibrio)} unidades</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Receita no Ponto de Equilíbrio:</span>
+                    <span class="result-value">${formatarMoeda(receitaEquilibrio)}</span>
+                </div>
+                <p class="info-text">Você precisa vender ${formatarNumero(pontoEquilibrio)} unidades para cobrir todos os custos e não ter lucro nem prejuízo.</p>
+            `;
+            resultDiv.classList.add('show');
+        }
+
+        function calcularLucratividade() {
+            const lucroLiquido = obterValor('lucro-liquido-lucr');
+            const receitaTotal = obterValor('receita-total');
+
+            if (isNaN(lucroLiquido) || isNaN(receitaTotal)) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            if (receitaTotal === 0) {
+                alert('A Receita Total não pode ser zero!');
+                return;
+            }
+
+            const lucratividade = (lucroLiquido / receitaTotal) * 100;
+
+            const resultDiv = document.getElementById('result-lucratividade');
+            resultDiv.innerHTML = `
+                <h3>Resultado:</h3>
+                <div class="result-item">
+                    <span class="result-label">Lucratividade:</span>
+                    <span class="result-value">${formatarPercentual(lucratividade)}</span>
+                </div>
+                <p class="info-text">Para cada R$ 100,00 de receita, você tem ${formatarMoeda(lucratividade)} de lucro líquido.</p>
+            `;
+            resultDiv.classList.add('show');
+        }
+
+        function calcularRentabilidade() {
+            const lucroLiquido = obterValor('lucro-liquido-rent');
+            const investimento = obterValor('investimento');
+
+            if (isNaN(lucroLiquido) || isNaN(investimento)) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            if (investimento === 0) {
+                alert('O Investimento não pode ser zero!');
+                return;
+            }
+
+            const rentabilidade = (lucroLiquido / investimento) * 100;
+
+            const resultDiv = document.getElementById('result-rentabilidade');
+            resultDiv.innerHTML = `
+                <h3>Resultado:</h3>
+                <div class="result-item">
+                    <span class="result-label">Rentabilidade (ROI):</span>
+                    <span class="result-value">${formatarPercentual(rentabilidade)}</span>
+                </div>
+                <p class="info-text">Retorno de ${formatarMoeda(rentabilidade)} para cada R$ 100,00 investidos.</p>
+            `;
+            resultDiv.classList.add('show');
+        }
+
+        function calcularMarkup() {
+            // Calcula a soma de todos os percentuais
+            let percentualTotal = 0;
+            let detalhePercentuais = [];
+
+            for (const id in percentuais) {
+                const nome = document.getElementById(`${id}-nome`).value || `Percentual ${percentuais[id].id}`;
+                const valorInput = document.getElementById(`${id}-valor`).value;
+                const valor = valorInput ? obterValor(`${id}-valor`) : NaN;
+                
+                if (!isNaN(valor) && valor > 0) {
+                    percentualTotal += valor;
+                    detalhePercentuais.push({ nome, valor });
+                }
+            }
+
+            if (detalhePercentuais.length === 0) {
+                alert('Por favor, adicione pelo menos um percentual válido!');
+                return;
+            }
+
+            // Calcula o somatório dos custos
+            let somatorioCDVU = 0;
+            let detalheProdutos = [];
+
+            for (const id in produtos) {
+                const nome = document.getElementById(`${id}-nome`).value || `Produto ${produtos[id].id}`;
+                const custoValue = document.getElementById(`${id}-custo`).value;
+                const custo = custoValue ? obterValor(`${id}-custo`) : NaN;
+                
+                if (!isNaN(custo) && custo > 0) {
+                    somatorioCDVU += custo;
+                    detalheProdutos.push({ nome, custo });
+                }
+            }
+
+            if (somatorioCDVU === 0) {
+                alert('Por favor, adicione pelo menos um produto com custo válido!');
+                return;
+            }
+
+            if (percentualTotal >= 100) {
+                alert('A soma dos percentuais não pode ser maior ou igual a 100%!');
+                return;
+            }
+
+            // Markup Multiplicador
+            const markupMultiplicador = 100 / (100 - percentualTotal);
+            const precoVendaMultiplicador = somatorioCDVU * markupMultiplicador;
+
+            // Markup Divisor
+            const markupDivisor = 1 - (percentualTotal / 100);
+            const precoVendaDivisor = somatorioCDVU / markupDivisor;
+
+            let detalhePercentuaisHTML = '';
+            detalhePercentuais.forEach(p => {
+                detalhePercentuaisHTML += `
+                    <div class="result-item">
+                        <span class="result-label">${p.nome}:</span>
+                        <span class="result-value">${formatarPercentual(p.valor)}</span>
+                    </div>
+                `;
+            });
+
+            let detalheProdutosHTML = '';
+            detalheProdutos.forEach(p => {
+                detalheProdutosHTML += `
+                    <div class="result-item">
+                        <span class="result-label">${p.nome}:</span>
+                        <span class="result-value">${formatarMoeda(p.custo)}</span>
+                    </div>
+                `;
+            });
+
+            const resultDiv = document.getElementById('result-markup');
+            resultDiv.innerHTML = `
+                <h3>Percentuais Aplicados:</h3>
+                ${detalhePercentuaisHTML}
+                <div class="result-item" style="background: #fff3e0;">
+                    <span class="result-label"><strong>Total de Percentuais:</strong></span>
+                    <span class="result-value" style="color: #e65100;">${formatarPercentual(percentualTotal)}</span>
+                </div>
+                
+                <h3 style="margin-top: 20px;">Composição dos Custos:</h3>
+                ${detalheProdutosHTML}
+                <div class="result-item" style="background: #e8f5e9;">
+                    <span class="result-label"><strong>Somatório CDVU:</strong></span>
+                    <span class="result-value" style="color: #2e7d32;">${formatarMoeda(somatorioCDVU)}</span>
+                </div>
+                
+                <h3 style="margin-top: 20px;">Método Multiplicador:</h3>
+                <div class="result-item">
+                    <span class="result-label">Markup Multiplicador:</span>
+                    <span class="result-value">${formatarNumero(markupMultiplicador, 4)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Preço de Venda (PV):</span>
+                    <span class="result-value">${formatarMoeda(precoVendaMultiplicador)}</span>
+                </div>
+                
+                <h3 style="margin-top: 20px;">Método Divisor:</h3>
+                <div class="result-item">
+                    <span class="result-label">Markup Divisor:</span>
+                    <span class="result-value">${formatarNumero(markupDivisor, 4)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Preço de Venda (PV):</span>
+                    <span class="result-value">${formatarMoeda(precoVendaDivisor)}</span>
+                </div>
+                
+                
+                
+                <p class="info-text">Os dois métodos (Multiplicador e Divisor) devem resultar no mesmo Preço de Venda. Pequenas diferenças podem ocorrer devido a arredondamentos.</p>
+            `;
+            resultDiv.classList.add('show');
+        }
+
+        // Funções para limpar dados
+        function limparEquilibrio() {
+            document.getElementById('custo-fixo').value = '';
+            document.getElementById('preco-venda-eq').value = '';
+            document.getElementById('custo-variavel-eq').value = '';
+            document.getElementById('result-equilibrio').classList.remove('show');
+        }
+
+        function limparLucratividade() {
+            document.getElementById('lucro-liquido-lucr').value = '';
+            document.getElementById('receita-total').value = '';
+            document.getElementById('result-lucratividade').classList.remove('show');
+        }
+
+        function limparRentabilidade() {
+            document.getElementById('lucro-liquido-rent').value = '';
+            document.getElementById('investimento').value = '';
+            document.getElementById('result-rentabilidade').classList.remove('show');
+        }
+
+        function limparMarkup() {
+            // Limpa todos os percentuais e produtos
+            percentuais = {};
+            percentualCounter = 0;
+            document.getElementById('percentuais-container').innerHTML = '';
+            
+            produtos = {};
+            produtoCounter = 0;
+            document.getElementById('produtos-container').innerHTML = '';
+            
+            // Adiciona um percentual e um produto inicial
+            adicionarPercentual();
+            adicionarProduto();
+            
+            document.getElementById('result-markup').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
